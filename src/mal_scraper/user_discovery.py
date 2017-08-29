@@ -5,7 +5,7 @@ import re
 from .requester import request_passthrough
 
 
-def discover_users(requester=request_passthrough, use_cache=True, use_web=None):
+def discover_users(requester=request_passthrough, use_web=None):
     """Return a set of user_ids usable by other user related library calls.
 
     By default we will attempt to return any in our cache - clearing the cache
@@ -52,12 +52,9 @@ def discover_users(requester=request_passthrough, use_cache=True, use_web=None):
     # TODO: Test this method
     discovered_users = set()
 
-    if use_cache:
-        discovered_users |= default_user_store.get_and_clear_cache()
-
     # Force use web, or fall-back to web if the cache is empty
     if use_web or (use_web is None and not discovered_users):
-        meta, response = requester.get(get_url_for_user_discovery())
+        response = requester.get(get_url_for_user_discovery())
         response.raise_for_status()  # May raise
         discovered_users |= set(discover_users_from_html(response.text))
 
@@ -95,20 +92,3 @@ def discover_users_from_html(html):
     """
     return (m.group('username') for m in _username_regex.finditer(html))
 
-
-class UserStore:
-    """Cache the dynamic discovery of users."""
-
-    def __init__(self):
-        self.cache = set()
-
-    def store_users_from_html(self, html):
-        """Store the users discovered in the cache from the given HTML text."""
-        self.cache |= set(discover_users_from_html(html))
-
-    def get_and_clear_cache(self):
-        cache, self.cache = self.cache, set()
-        return cache
-
-
-default_user_store = UserStore()

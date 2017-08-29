@@ -34,11 +34,11 @@ class ConsumptionStatus(Enum):
     def mal_code_to_enum(cls, code):
         """Return the enum from the MAL code, or None."""
         return {
-            1: ConsumptionStatus.consuming,
-            2: ConsumptionStatus.completed,
-            3: ConsumptionStatus.on_hold,
-            4: ConsumptionStatus.dropped,
-            6: ConsumptionStatus.backlog,
+            1: "watching",
+            2: "completed",
+            3: "hold on",
+            4: "dropped",
+            6: "ptw",
         }.get(code)
 
 

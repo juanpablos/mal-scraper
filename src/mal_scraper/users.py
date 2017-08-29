@@ -22,7 +22,6 @@ from .consts import ConsumptionStatus, Retrieved
 from .exceptions import MissingTagError, ParseError, RequestError
 from .mal_utils import get_date, get_datetime
 from .requester import request_passthrough
-from .user_discovery import default_user_store
 
 user_cache = set()  # Global store of discovered users
 
@@ -80,9 +79,6 @@ def get_user_stats(user_id, requester=request_passthrough):
 
     response.raise_for_status()  # May raise
 
-    # Auto user_id discovery
-    default_user_store.store_users_from_html(response.text)
-
     soup = BeautifulSoup(response.content, 'html.parser')
     data = get_user_stats_from_soup(soup)  # May raise
 
@@ -138,7 +134,7 @@ def get_user_anime_list(user_id, requester=request_passthrough):
     has_more_anime = True
     while has_more_anime:
         url = get_anime_list_url_for_user(user_id, len(anime))
-        meta, response = requester.get(url)
+        response = requester.get(url)
         if not response.ok:  # Raise an exception
             if response.status_code in (400, 401):
                 msg = 'Access to user "%s"\'s anime list is forbidden' % user_id
@@ -399,14 +395,13 @@ def get_user_anime_list_from_json(json):
 
         anime.append({
             'name': mal_anime['anime_title'],
-            'id_ref': int(mal_anime['anime_id']),
-            'consumption_status': ConsumptionStatus.mal_code_to_enum(mal_anime['status']),
+            'ani_id': int(mal_anime['anime_id']),
+            'ani_status': ConsumptionStatus.mal_code_to_enum(mal_anime['status']),
             'is_rewatch': bool(mal_anime['is_rewatching']),
             'score': int(mal_anime['score']),
-            # 'start_date': start_date,
             'progress': int(mal_anime['num_watched_episodes']),
-            # 'finish_date': finish_date,
-            'tags': tags,
+            'url': mal_anime['anime_url'],
+            #'tags': tags,
         })
 
     return anime

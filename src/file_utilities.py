@@ -4,6 +4,10 @@ import ast
 import csv
 
 
+def is_in_file(file, word):
+    return word in open(file).read()
+
+
 def blend_files(somh, output='default.txt'):
     o = open(output, 'w', encoding='utf-8')
     for ff in somh:
