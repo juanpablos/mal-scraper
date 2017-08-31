@@ -24,7 +24,7 @@ def scrape_mal_list(username, outfile="mal_scrape.csv"):
         writer.writerow(keys)
 
         # type list - dict
-        data = get_user_anime_list(username)
+        data = get_user_anime_list(username)  # possibly make more than 10 requests
         for anime in data:
             writer.writerow(get_values(anime, keys).insert(0, username))
 
@@ -36,7 +36,7 @@ def scrape_users(outfile="users.txt", times=10):
         us = csv.writer(uu)
         for _ in range(times):
             print("iter {}".format(_))
-            time.sleep(5)
+            time.sleep(3)
             _users = list(discover_users())
             for u in _users:
                 if not file_utilities.is_in_file(outfile, u):
@@ -47,6 +47,7 @@ def scrape_users(outfile="users.txt", times=10):
 def run_list_scraper(username_file, outfile="mal_scrape.csv"):
     with open(username_file, 'r', newline="\n", encoding='utf-8') as f:
         for line in f:
+            time.sleep(5)
             scrape_mal_list(line.strip(), outfile)
 
             print("{} done".format(line))
@@ -54,7 +55,7 @@ def run_list_scraper(username_file, outfile="mal_scrape.csv"):
 
 user_out = "users.txt"
 mal_out = "mal_scrape.csv"
-scrape_users(user_out, 500)  # 8 seconds per iteration on average
+scrape_users(user_out, 500)  # 3 seconds waiting per iteration
 
 # run this after the users finish
-# run_list_scraper(user_out, mal_out)
+# run_list_scraper(user_out, mal_out)  # 5+ seconds per user average + 5 seconds waiting between users to not get 429'd
