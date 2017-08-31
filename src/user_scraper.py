@@ -14,33 +14,47 @@ def get_values(dictionary, key_arr):
     return w
 
 
-def temp():
+# write an username's MAL list to a file.
+def scrape_mal_list(username, outfile="mal_scrape.csv"):
 
-    an = open("Testing3.txt", 'w', newline="\n", encoding='utf-8')
-    r = csv.writer(an)
+    with open(outfile, 'w', newline="\n", encoding='utf-8') as f:
+        writer = csv.writer(f)
 
-    keys = ['name', 'ani_id', 'ani_status', 'is_rewatch', 'score', 'progress', 'url']
-    r.writerow(keys)
+        keys = ['name', 'ani_id', 'ani_status', 'is_rewatch', 'score', 'progress', 'url']
+        writer.writerow(keys)
 
-    # type list - dict
-    data=get_user_anime_list("HeavensC")
-    for i in data:
-        print(i)
-        r.writerow(get_values(i, keys))
+        # type list - dict
+        data = get_user_anime_list(username)
+        for anime in data:
+            writer.writerow(get_values(anime, keys).insert(0, username))
 
 
+# run this to generate a file with recently active MAL users.
+# set times to a big value (ex: 100-1000) to save more users.
 def scrape_users(outfile="users.txt", times=10):
-    uu = open(outfile, 'w', newline="\n", encoding='utf-8')
-    us = csv.writer(uu)
-    for _ in range(times):
-        print("iter {}".format(_))
-        time.sleep(3)
-        _users = list(discover_users())
-        for u in _users:
-            if not file_utilities.is_in_file(outfile, u):
-                us.writerow([u])
-        uu.flush()
-    uu.close()
+    with open(outfile, 'w', newline="\n", encoding='utf-8') as uu:
+        us = csv.writer(uu)
+        for _ in range(times):
+            print("iter {}".format(_))
+            time.sleep(5)
+            _users = list(discover_users())
+            for u in _users:
+                if not file_utilities.is_in_file(outfile, u):
+                    us.writerow([u])
+            uu.flush()
 
 
+def run_list_scraper(username_file, outfile="mal_scrape.csv"):
+    with open(username_file, 'r', newline="\n", encoding='utf-8') as f:
+        for line in f:
+            scrape_mal_list(line.strip(), outfile)
 
+            print("{} done".format(line))
+
+
+user_out = "users.txt"
+mal_out = "mal_scrape.csv"
+scrape_users(user_out, 500)  # 8 seconds per iteration on average
+
+# run this after the users finish
+# run_list_scraper(user_out, mal_out)
