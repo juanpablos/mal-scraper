@@ -17,16 +17,22 @@ def get_values(dictionary, key_arr):
 # write an username's MAL list to a file.
 def scrape_mal_list(username, outfile="mal_scrape.csv"):
 
-    with open(outfile, 'w', newline="\n", encoding='utf-8') as f:
-        writer = csv.writer(f)
+    try:
+        with open(outfile, 'w', newline="\n", encoding='utf-8') as f:
+            writer = csv.writer(f)
 
-        keys = ['name', 'ani_id', 'ani_status', 'is_rewatch', 'score', 'progress', 'url']
-        writer.writerow(keys)
+            keys = ['name', 'ani_id', 'ani_status', 'is_rewatch', 'score', 'progress', 'url']
+            writer.writerow(keys)
 
-        # type list - dict
-        data = get_user_anime_list(username)  # possibly make more than 10 requests
-        for anime in data:
-            writer.writerow(get_values(anime, keys).insert(0, username))
+            # type list - dict
+            data = get_user_anime_list(username)  # possibly make more than 10 requests
+            for anime in data:
+                writer.writerow(get_values(anime, keys).insert(0, username))
+    except AssertionError:
+        pass
+    except:
+        time.sleep(20)
+        scrape_mal_list(username, outfile)
 
 
 # run this to generate a file with recently active MAL users.
@@ -47,15 +53,19 @@ def scrape_users(outfile="users.txt", times=10):
 def run_list_scraper(username_file, outfile="mal_scrape.csv"):
     with open(username_file, 'r', newline="\n", encoding='utf-8') as f:
         for line in f:
-            time.sleep(5)
-            scrape_mal_list(line.strip(), outfile)
+            try:
+                time.sleep(5)
+                scrape_mal_list(line.strip(), outfile)
 
-            print("{} done".format(line))
+                print("{} done".format(line))
+            except:
+                time.sleep(20)
+                pass
 
 
 user_out = "users.txt"
 mal_out = "mal_scrape.csv"
-scrape_users(user_out, 500)  # 3 seconds waiting per iteration
+#scrape_users(user_out, 500)  # 3 seconds waiting per iteration
 
 # run this after the users finish
-# run_list_scraper(user_out, mal_out)  # 5+ seconds per user average + 5 seconds waiting between users to not get 429'd
+run_list_scraper(user_out, mal_out)  # 5+ seconds per user average + 5 seconds waiting between users to not get 429'd

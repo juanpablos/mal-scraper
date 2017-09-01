@@ -3,7 +3,7 @@
 import csv
 import time
 
-from .mal_scraper import anime
+from mal_scraper import anime
 
 
 def get_values(dictionary, key_arr):
@@ -44,7 +44,8 @@ y.writerow(['id', 'staff'])
 
 count = 0
 
-f = open('to_parse/remaining_' + num + '.txt', 'r')
+# f = open('to_parse/remaining_' + num + '.txt', 'r')
+f = open('to_parse/ids.txt', 'r')
 for line in f:
     sline = line.strip()
     data = {}
@@ -82,6 +83,7 @@ for line in f:
         print("done", sline)
 
     count += 1
+    an.flush()
 
 print('end')
 

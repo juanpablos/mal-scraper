@@ -12,6 +12,8 @@ Possible alternative:
 - http://graph.anime.plus/
 """
 
+
+import time
 from datetime import datetime
 from functools import partial
 
@@ -135,19 +137,24 @@ def get_user_anime_list(user_id, requester=request_passthrough):
     while has_more_anime:
         url = get_anime_list_url_for_user(user_id, len(anime))
         response = requester.get(url)
-        if not response.ok:  # Raise an exception
-            if response.status_code in (400, 401):
+
+        url_user = 'https://myanimelist.net/animelist/{}'.format(user_id)
+        response1 = requester.get(url_user)
+
+        if not response1.ok:  # Raise an exception
+            if response1.status_code in (400, 401, 402, 403):
                 msg = 'Access to user "%s"\'s anime list is forbidden' % user_id
-                raise RequestError(RequestError.Code.forbidden, msg)
-            elif response.status_code == 404:
+                raise AssertionError
+            elif response1.status_code == 404:
                 msg = 'User "%s" does not exist' % user_id
                 raise RequestError(RequestError.Code.does_not_exist, msg)
 
-            response.raise_for_status()  # Will raise
+            response1.raise_for_status()  # Will raise
 
         additional_anime = get_user_anime_list_from_json(response.json())
         if additional_anime:
             anime.extend(additional_anime)
+            time.sleep(20)
         else:
             has_more_anime = False
 

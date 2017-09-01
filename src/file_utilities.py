@@ -331,10 +331,10 @@ def correct_staff(file, out):
 #     blend_files(c_files, r + c + f_format[1])
 #     blend_files(s_files, r + s + f_format[1])
 
-r = 'results/'
-t = 'tables/'
-staff = 'staff.csv'
-
-# correct_anime(r+anime, r+t+'general.csv',r+t+'date.csv',r+t+'producers.csv',r+t+'licensors.csv',
-#               r + t + 'studio.csv',r+t+'genre.csv')
-correct_staff(r + staff, r + t + 'staff.csv')
+# r = 'results/'
+# t = 'tables/'
+# staff = 'staff.csv'
+#
+# # correct_anime(r+anime, r+t+'general.csv',r+t+'date.csv',r+t+'producers.csv',r+t+'licensors.csv',
+# #               r + t + 'studio.csv',r+t+'genre.csv')
+# correct_staff(r + staff, r + t + 'staff.csv')
